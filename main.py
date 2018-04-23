@@ -10,6 +10,7 @@ def main():
 	df = load_dataframe('./data/DataSet.csv')
 	print(df)
 	write_dataframe('./data/Test.csv',df)
+	generateContinuousReport(df)
 
 # load_dataFrame
 def load_dataframe(path):
@@ -23,36 +24,32 @@ def write_dataframe(path,dataframe):
 def generateContinuousReport(df):
 	
 	# 1st step: create a new dataframe from continuousFeatures
+	continuousDf = pd.DataFrame.from_record(continuousFeatures, columns=['q_data'])
+
+	print(continuousDf)
 
 	# 2nd step: create a dataframe for the continuous measures
 
 	# 3rd step: loop over the new dataframe
-		# computing each measure (count, miss, card, etc.)
+		# computing each measure (count, miss, card, etc.) (with Arthur's methods)
 		# adding the row to the global result dataframe
 
 	# 4th step: return the final dataframe
+	return continuousDf
 
 
 
-def generateCategoricalReport():
+def generateCategoricalReport(df):
 	# 1st step: create a new dataframe from categoricalFeatures
 
 	# 2nd step: create a dataframe for the categorical measures
 
 	# 3rd step: loop over the new dataframe
-		# computing each measure (count, miss, card, etc.)
+		# computing each measure (count, miss, card, etc.) (with Arthur's methods)
 		# adding the row to the global result dataframe
 
 	# 4th step: return the final dataframe
-
-
-
-
-
-
-# num_missing
-def num_missing(x):
-  return sum(x.isnull())
+	return df
 
 
 main()
