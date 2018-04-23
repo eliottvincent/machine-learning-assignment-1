@@ -9,7 +9,6 @@ categoricalMeasuresNames = ['feature_name', 'count', 'miss_percentage', 'card', 
 # main
 def main():
 	df = load_dataframe('./data/DataSet.csv')
-	print(df)
 	write_dataframe('./data/Test.csv', df)
 	continuousReport = generateContinuousReport(df)
 	print(continuousReport)
@@ -22,11 +21,6 @@ def load_dataframe(path):
 def write_dataframe(path,df):
 	df.to_csv(path)
 
-# generateContinuousReport
-def generateContinuousReport(df):
-	
-	# 1st step: create a new dataframe from continuousFeatures
-	continuousDf = df.drop(categoricalFeatures, axis=1)
 # computeContinuousMeasures
 def computeContinuousMeasures(df):
 	count=0
@@ -42,11 +36,13 @@ def computeContinuousMeasures(df):
 		if values not in valuesTab:
 			valuesTab.append(values)
 			card+=1
-	return {'count': count, 'miss': (miss/count)*100, 'card': card, 'min': df.min(), 'quart1': df.quantile([0.25][0]), 'mean': df.mean(), 'median': df.median(),'quart3': df.quantile([0.75][0]), 'max': df.max(), 'StdDev': df.std()}
+	return {'count': count, 'miss_percentage': (miss/count)*100, 'card': card, 'minimum': df.min(), 'first_quartile': df.quantile([0.25][0]), 'mean': df.mean(), 'median': df.median(),'third_quartile': df.quantile([0.75][0]), 'maximum': df.max(), 'std_dev': df.std()}
 
-# num_missing
-def num_missing(x):
-	return sum(x.isnull())
+# generateContinuousReport
+def generateContinuousReport(df):
+	
+	# 1st step: create a new dataframe from continuousFeatures
+	continuousDf = df.drop(categoricalFeatures, axis=1)
 
 	# 2nd step: create an empty dataframe for the continuous measures
 	measuresDf = pd.DataFrame(columns=continuousMeasuresNames)
@@ -62,7 +58,8 @@ def num_missing(x):
 		measures = computeContinuousMeasures(columnValues)
 
 		# creating a dataframe with the current column's measures
-		currentDf = pd.DataFrame(np.array([measures]), columns=continuousMeasuresNames)
+		currentDf = pd.DataFrame([], columns=continuousMeasuresNames)
+		currentDf = currentDf.append(measures, ignore_index=True)
 		currentDf.set_index('feature_name', inplace=True)
 
 		# merging into the final dataframe
@@ -99,11 +96,5 @@ def generateCategoricalReport(df):
 
 	# 4th step: setting feature_name as the index
 	return measuresDf
-
-def computeContinuousMeasures(values):
-	return ['test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test']
-
-def computeCategoricalMeasures(values):
-	return ['test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test']
 
 main()
