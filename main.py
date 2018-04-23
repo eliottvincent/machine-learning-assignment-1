@@ -8,7 +8,7 @@ def main():
 
 # load_DataFrame
 def load_dataframe(path):
-	return pd.read_csv(path, header=None)
+	return pd.read_csv(path, header=0, index_col='id')
 
 
 # num_missing
