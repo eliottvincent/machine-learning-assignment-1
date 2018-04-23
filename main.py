@@ -1,16 +1,18 @@
 import pandas as pd
+import numpy as np
 
 continuousFeatures = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week']
 categoricalFeatures = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country', 'target']
-continuousMeasures = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
-categoricalMeasures = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
+continuousMeasuresNames = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
+categoricalMeasuresNames = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
 
 # main
 def main():
 	df = load_dataframe('./data/DataSet.csv')
 	# print(df)
 	write_dataframe('./data/Test.csv',df)
-	generateContinuousReport(df)
+	continuousReport = generateContinuousReport(df)
+	print(continuousReport)
 
 # load_dataFrame
 def load_dataframe(path):
@@ -27,30 +29,27 @@ def generateContinuousReport(df):
 	continuousDf = df.drop(categoricalFeatures, axis=1)
 
 	# 2nd step: create an empty dataframe for the continuous measures
-	measuresDf = pd.DataFrame.from_records([], continuousMeasures)
+	measuresDf = pd.DataFrame(columns=continuousMeasuresNames)
+	measuresDf.set_index('feature_name', inplace=True)
 
 	# print(measuresDf)
 	# 3rd step: loop over the new dataframe
 	for column in continuousDf:
 		
-		columnValues = df[column]	# contains all values from the current column
+		# gathering all values for the current column
+		columnValues = df[column]
 
 		# computing each measure (count, miss, card, etc.)
-		count = computeCount(columnValues)
-		miss_percentage = computeMissPercentage(columnValues)
-		card = computeCard(columnValues)
-		minimum = computeMinimum(columnValues)
-		first_quartile = computeFirstQuartile(columnValues)
-		mean = computeMean(columnValues)
-		median = computeMedian(columnValues)
-		third_quartile = computeThirdQuartile(columnValues)
-		maximum = computeMaximum(columnValues)
-		std_dev = computeStdDev(columnValues)
+		measures = computeContinuousMeasures(columnValues)
 
-		# adding the row to the global result dataframe
-		
+		# creating a dataframe with the current column's measures
+		currentDf = pd.DataFrame(np.array([measures]), columns=continuousMeasuresNames)
+		currentDf.set_index('feature_name', inplace=True)
 
-	# 4th step: return the final dataframe
+		# merging into the final dataframe
+		measuresDf = pd.concat([measuresDf, currentDf], axis=0)
+
+	# 4th step: setting feature_name as the index
 	return measuresDf
 
 
@@ -60,7 +59,7 @@ def generateCategoricalReport(df):
 	categoricalDf = df.drop(continuousFeatures, axis=1)
 
 	# 2nd step: create a dataframe for the categorical measures
-	measuresDf = pd.DataFrame.from_records([], categoricalMeasures)
+	measuresDf = pd.DataFrame.from_records([], categoricalMeasuresNames)
 
 	# 3rd step: loop over the new dataframe
 		# computing each measure (count, miss, card, etc.) (with Arthur's methods)
@@ -68,4 +67,9 @@ def generateCategoricalReport(df):
 
 	# 4th step: return the final dataframe
 	return measuresDf
+
+def computeContinuousMeasures(values):
+	return ['test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test']
+
+
 main()
