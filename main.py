@@ -9,8 +9,8 @@ categoricalMeasuresNames = ['feature_name', 'count', 'miss_percentage', 'card', 
 # main
 def main():
 	df = load_dataframe('./data/DataSet.csv')
-	# print(df)
-	write_dataframe('./data/Test.csv',df)
+	print(df)
+	write_dataframe('./data/Test.csv', df)
 	continuousReport = generateContinuousReport(df)
 	print(continuousReport)
 
@@ -22,7 +22,7 @@ def load_dataframe(path):
 def write_dataframe(path,dataframe):
 	dataframe.to_csv(path)
 
-# 
+# generateContinuousReport
 def generateContinuousReport(df):
 	
 	# 1st step: create a new dataframe from continuousFeatures
@@ -32,7 +32,6 @@ def generateContinuousReport(df):
 	measuresDf = pd.DataFrame(columns=continuousMeasuresNames)
 	measuresDf.set_index('feature_name', inplace=True)
 
-	# print(measuresDf)
 	# 3rd step: loop over the new dataframe
 	for column in continuousDf:
 		
@@ -55,21 +54,36 @@ def generateContinuousReport(df):
 
 
 def generateCategoricalReport(df):
-	# 1st step: create a new dataframe from categoricalFeatures
+	# 1st step: create a new dataframe from continuousFeatures
 	categoricalDf = df.drop(continuousFeatures, axis=1)
 
-	# 2nd step: create a dataframe for the categorical measures
-	measuresDf = pd.DataFrame.from_records([], categoricalMeasuresNames)
+	# 2nd step: create an empty dataframe for the continuous measures
+	measuresDf = pd.DataFrame(columns=categoricalMeasuresNames)
+	measuresDf.set_index('feature_name', inplace=True)
 
 	# 3rd step: loop over the new dataframe
-		# computing each measure (count, miss, card, etc.) (with Arthur's methods)
-		# adding the row to the global result dataframe
+	for column in categoricalDf:
+		
+		# gathering all values for the current column
+		columnValues = df[column]
 
-	# 4th step: return the final dataframe
+		# computing each measure (count, miss, card, etc.)
+		measures = computeCategoricalMeasures(columnValues)
+
+		# creating a dataframe with the current column's measures
+		currentDf = pd.DataFrame(np.array([measures]), columns=categoricalMeasuresNames)
+		currentDf.set_index('feature_name', inplace=True)
+
+		# merging into the final dataframe
+		measuresDf = pd.concat([measuresDf, currentDf], axis=0)
+
+	# 4th step: setting feature_name as the index
 	return measuresDf
 
 def computeContinuousMeasures(values):
 	return ['test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test']
 
+def computeCategoricalMeasures(values):
+	return ['test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test', 'test']
 
 main()
