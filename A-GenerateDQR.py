@@ -8,6 +8,9 @@ __version__ = "0.1"
 #================================================================================
 import pandas as pd
 import numpy as np
+import plotly
+from plotly.graph_objs import Scatter, Layout
+import plotly.graph_objs as go
 
 
 #================================================================================
@@ -33,6 +36,8 @@ def main():
 	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
 	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
+	generateContinuousGraphs(continuousDf)
+	# generateCategoricalGraphs(categoricalDf)
 
 
 
@@ -220,5 +225,34 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 
 	# 3rd step: return the completed dataframe
 	return statisticsDf
+
+
+
+
+#   ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗███████╗
+#  ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██╔════╝
+#  ██║  ███╗██████╔╝███████║██████╔╝███████║███████╗
+#  ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║╚════██║
+#  ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║███████║
+#   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝
+
+
+def generateContinuousGraphs(continuousReportDf):
+
+	for feature in continuousReportDf:
+		# print('Viewing ' + index + ' row: ' + str(row['card']))
+
+		data = [go.Histogram(x=continuousReportDf[feature])]
+		path = dataPath + feature + '-histogram.html'
+		plotly.offline.plot(data, filename=path, auto_open=False)
+	
+
+
+
+	# a histogram for each of the continuous feature with high cardinality (≥ 10)
+	# a bar plot for each continuous feature with a low cardinality (< 10)
+
+def generateCategoricalGraphs(categoricalReport):
+	print('test')
 
 main()
