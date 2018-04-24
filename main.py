@@ -56,6 +56,7 @@ def generateContinuousReport(df):
 
 		# computing each measure (count, miss, card, etc.)
 		measures = computeContinuousMeasures(columnValues)
+		measures['feature_name'] = column
 
 		# creating a dataframe with the current column's measures
 		currentDf = pd.DataFrame([], columns=continuousMeasuresNames)
