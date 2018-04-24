@@ -56,7 +56,7 @@ def computeContinuousMeasures(df):
 # generateContinuousReport
 def generateContinuousReport(df):
 	
-	return generateReport(df, categoricalFeatures, continuousMeasuresNames, computeContinuousMeasures)
+	return generateReport(df, continuousFeatures, continuousMeasuresNames, computeContinuousMeasures)
 
 
 def generateCategoricalReport(df):
@@ -65,20 +65,17 @@ def generateCategoricalReport(df):
 
 
 
-def generateReport(mainDataFrame, featuresToRemove, measuresName, computeFunction):
+def generateReport(dataFrame, features, measuresName, computeFunction):
 
-	# 1st step: create a "sub-dataframe" with only features we want
-	subDataFrame = mainDataFrame.drop(featuresToRemove, axis=1)
-
-	# 2nd step: create an empty dataframe with the measures names as columns
+	# 1st step: create an empty dataframe with the measures names as columns
 	measuresDf = pd.DataFrame(columns=measuresName)
 	measuresDf.set_index('feature_name', inplace=True)
 
-	# 3rd step: loop over each feature in the sub-dataframe
-	for featureName in subDataFrame:
+	# 2nd step: loop over each feature
+	for featureName in features:
 		
 		# gathering all values for the current feature
-		featureValues = subDataFrame[featureName]
+		featureValues = dataFrame[featureName]
 
 		# computing measures
 		measures = computeFunction(featureValues)
@@ -89,7 +86,7 @@ def generateReport(mainDataFrame, featuresToRemove, measuresName, computeFunctio
 		# adding the serie to the final dataframe
 		measuresDf = measuresDf.append(measuresSeries)
 
-	# 4th step: return the completed dataframe
+	# 3rd step: return the completed dataframe
 	return measuresDf
 
 main()
