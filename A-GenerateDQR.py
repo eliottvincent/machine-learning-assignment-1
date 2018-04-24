@@ -19,14 +19,15 @@ from collections import Counter
 #================================================================================
 continuousFeatures = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week']
 categoricalFeatures = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country', 'target']
-continuousStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
-categoricalStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
+continuousStatistics = ['FEATURENAME', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
+categoricalStatistics = ['FEATURENAME', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
 dataPath = './data/'
 teamName = 'A'
 
 
 def main():
 	df = load_dataframe('DataSet.csv')
+	#print(len(df['workclass'])-df['workclass'].count())
 
 	continuousDf = getContinuousDf(df)
 	categoricalDf = getCategorical(df)
@@ -53,7 +54,7 @@ def main():
 
 def load_dataframe(fileName):
 	path = dataPath + fileName
-	return pd.read_csv(path, header=0, index_col='id', na_values=['?'])
+	return pd.read_csv(path, header=0, index_col='id', na_values=[' ?'])
 
 def write_dataframe(df, fileName):
 	path = dataPath + fileName
@@ -87,26 +88,11 @@ def computeContinuousStatistics(df):
 	{} -- a dictionary containing the statistics
     """
 
-	# init. values
-	count=0
-	miss=0
-	valuesTab=[]
-	card=0
-
-	# computing statistics
-	for values in df:
-		count+=1
-		if values==' ?' or values=='?':
-			miss+=1
-		if values not in valuesTab:
-			valuesTab.append(values)
-			card+=1
-
-	# returning final statistics
+	# returning statistics
 	return {
-		'count': count,
-		'miss_percentage': (miss/count)*100,
-		'card': card,
+		'count': len(df),
+		'miss_percentage': ((len(df)-df.count())*100)/len(df),
+		'card': df.nunique(),
 		'minimum': df.min(),
 		'first_quartile': df.quantile([0.25][0]),
 		'mean': df.mean(),
@@ -142,21 +128,30 @@ def computeCategoricalStatistics(df):
 		if values not in valuesTab:
 			valuesTab.append(values)
 			card+=1
+	
+	# find modes
+	newDf = df.copy()
+	firstMode = newDf.mode()[0]
+	firstModeFrequency = newDf.describe()[3]
+	firstModePercentage = (firstModeFrequency/count)*100
+	
+	newDf = newDf[newDf != firstMode]
+	secondMode = newDf.mode()[0]
+	secondModeFrequency = newDf.describe()[3]
+	secondModePercentage = (secondModeFrequency/count)*100
 
 	# returning final statistics
 	return {
-		'count': card,
-		'miss_percentage': card,
-		'card': card,
-		'mode': card,
-		'mode_frequency': card,
-		'mode_percentage': card,
-		'second_mode': card,
-		'second_mode_frequency': card,
-		'second_mode_percentage': card
+		'count': len(df),
+		'miss_percentage': ((len(df)-df.count())*100)/len(df),
+		'card': df.nunique(),
+		'mode': firstMode,
+		'mode_frequency': firstModeFrequency,
+		'mode_percentage': firstModePercentage,
+		'second_mode': secondMode,
+		'second_mode_frequency': secondModeFrequency,
+		'second_mode_percentage': secondModePercentage
 	}
-
-
 
 
 #  ██████╗ ███████╗██████╗  ██████╗ ██████╗ ████████╗███████╗
@@ -208,7 +203,7 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 
 	# 1st step: create an empty dataframe with the statistics names as columns
 	statisticsDf = pd.DataFrame(columns=statisticsNames)
-	statisticsDf.set_index('feature_name', inplace=True)
+	statisticsDf.set_index('FEATURENAME', inplace=True)
 
 	# 2nd step: loop over each feature
 	for featureName in dataFrame:
@@ -228,6 +223,9 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 	# 3rd step: return the completed dataframe
 	return statisticsDf
 
+# Lancement du programme
+if __name__ == '__main__':
+	main()
 
 
 
