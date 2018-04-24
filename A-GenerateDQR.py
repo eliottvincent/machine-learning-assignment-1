@@ -140,8 +140,6 @@ def computeCategoricalStatistics(df):
 	}
 
 
-
-
 #  ██████╗ ███████╗██████╗  ██████╗ ██████╗ ████████╗███████╗
 #  ██╔══██╗██╔════╝██╔══██╗██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝
 #  ██████╔╝█████╗  ██████╔╝██║   ██║██████╔╝   ██║   ███████╗
@@ -212,4 +210,6 @@ def generateReport(dataFrame, featuresNames, statisticsNames, computeFunction):
 	# 3rd step: return the completed dataframe
 	return statisticsDf
 
-main()
+# Lancement du programme
+if __name__ == '__main__':
+	main()
