@@ -223,9 +223,6 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 	# 3rd step: return the completed dataframe
 	return statisticsDf
 
-# Lancement du programme
-if __name__ == '__main__':
-	main()
 
 
 
@@ -276,4 +273,6 @@ def generateCategoricalGraphs(categoricalDf):
 		drawBarPlotFromFeature(featureName, categoricalDf[featureName])
 
 
-main()
+# Lancement du programme
+if __name__ == '__main__':
+	main()
