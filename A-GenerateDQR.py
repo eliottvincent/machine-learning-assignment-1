@@ -23,6 +23,7 @@ teamName = 'A'
 
 def main():
 	df = load_dataframe('DataSet.csv')
+	#print(len(df['workclass'])-df['workclass'].count())
 
 	continuousReport = generateContinuousReport(df)
 	print(continuousReport)
@@ -45,7 +46,7 @@ def main():
 
 def load_dataframe(fileName):
 	path = dataPath + fileName
-	return pd.read_csv(path, header=0, index_col='id', na_values=['?'])
+	return pd.read_csv(path, header=0, index_col='id', na_values=[' ?'])
 
 def write_dataframe(df, fileName):
 	path = dataPath + fileName
