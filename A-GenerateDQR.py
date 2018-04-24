@@ -73,26 +73,11 @@ def computeContinuousStatistics(df):
 	{} -- a dictionary containing the statistics
     """
 
-	# init. values
-	count=0
-	miss=0
-	valuesTab=[]
-	card=0
-
-	# computing statistics
-	for values in df:
-		count+=1
-		if values==' ?' or values=='?':
-			miss+=1
-		if values not in valuesTab:
-			valuesTab.append(values)
-			card+=1
-
-	# returning final statistics
+	# returning statistics
 	return {
-		'count': count,
-		'miss_percentage': (miss/count)*100,
-		'card': card,
+		'count': len(df),
+		'miss_percentage': len(df)-df.count(),
+		'card': df.nunique(),
 		'minimum': df.min(),
 		'first_quartile': df.quantile([0.25][0]),
 		'mean': df.mean(),
