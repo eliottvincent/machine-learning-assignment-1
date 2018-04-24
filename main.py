@@ -23,12 +23,14 @@ def write_dataframe(path,df):
 
 # computeContinuousMeasures
 def computeContinuousMeasures(df):
+	
+	# init. values
 	count=0
 	miss=0
 	valuesTab=[]
 	card=0
-	minimum=0
-	quart1=0
+
+	# computing measures
 	for values in df:
 		count+=1
 		if values==' ?' or values=='?':
@@ -36,7 +38,20 @@ def computeContinuousMeasures(df):
 		if values not in valuesTab:
 			valuesTab.append(values)
 			card+=1
-	return {'count': count, 'miss_percentage': (miss/count)*100, 'card': card, 'minimum': df.min(), 'first_quartile': df.quantile([0.25][0]), 'mean': df.mean(), 'median': df.median(),'third_quartile': df.quantile([0.75][0]), 'maximum': df.max(), 'std_dev': df.std()}
+
+	# returning final measures
+	return {
+		'count': count,
+		'miss_percentage': (miss/count)*100,
+		'card': card,
+		'minimum': df.min(),
+		'first_quartile': df.quantile([0.25][0]),
+		'mean': df.mean(),
+		'median': df.median(),
+		'third_quartile': df.quantile([0.75][0]),
+		'maximum': df.max(),
+		'std_dev': df.std()
+	}
 
 # generateContinuousReport
 def generateContinuousReport(df):
@@ -44,31 +59,27 @@ def generateContinuousReport(df):
 	# 1st step: create a new dataframe from continuousFeatures
 	continuousDf = df.drop(categoricalFeatures, axis=1)
 
-	# 2nd step: create an empty dataframe for the continuous measures
+	# 2nd step: create an empty dataframe with the continuous measures names as columns
 	measuresDf = pd.DataFrame(columns=continuousMeasuresNames)
 	measuresDf.set_index('feature_name', inplace=True)
 
-	# 3rd step: loop over the new dataframe
-	for column in continuousDf:
+	# 3rd step: loop over the continuous dataframe
+	for columnName in continuousDf:
 		
 		# gathering all values for the current column
-		columnValues = df[column]
+		columnValues = df[columnName]
 
 		# computing each measure (count, miss, card, etc.)
 		measures = computeContinuousMeasures(columnValues)
-		measures['feature_name'] = column
 
-		# creating a dataframe with the current column's measures
-		currentDf = pd.DataFrame([], columns=continuousMeasuresNames)
-		currentDf = currentDf.append(measures, ignore_index=True)
-		currentDf.set_index('feature_name', inplace=True)
+		# creating a serie with those measures
+		measuresSeries = pd.Series(measures, name=columnName)
 
-		# merging into the final dataframe
-		measuresDf = pd.concat([measuresDf, currentDf], axis=0)
+		# adding the serie to the final dataframe
+		measuresDf = measuresDf.append(measuresSeries)
 
 	# 4th step: setting feature_name as the index
 	return measuresDf
-
 
 
 def generateCategoricalReport(df):
