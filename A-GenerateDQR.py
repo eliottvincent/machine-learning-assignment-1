@@ -114,18 +114,29 @@ def computeCategoricalStatistics(df):
 		if values not in valuesTab:
 			valuesTab.append(values)
 			card+=1
+	
+	# find modes
+	newDf = df.copy()
+	firstMode = newDf.mode()[0]
+	firstModeFrequency = newDf.describe()[3]
+	firstModePercentage = (firstModeFrequency/count)*100
+	
+	newDf = newDf[newDf != firstMode]
+	secondMode = newDf.mode()[0]
+	secondModeFrequency = newDf.describe()[3]
+	secondModePercentage = (secondModeFrequency/count)*100
 
 	# returning final statistics
 	return {
-		'count': card,
-		'miss_percentage': card,
-		'card': card,
-		'mode': card,
-		'mode_frequency': card,
-		'mode_percentage': card,
-		'second_mode': card,
-		'second_mode_frequency': card,
-		'second_mode_percentage': card
+		'count': len(df),
+		'miss_percentage': ((len(df)-df.count())*100)/len(df),
+		'card': df.nunique(),
+		'mode': firstMode,
+		'mode_frequency': firstModeFrequency,
+		'mode_percentage': firstModePercentage,
+		'second_mode': secondMode,
+		'second_mode_frequency': secondModeFrequency,
+		'second_mode_percentage': secondModePercentage
 	}
 
 
