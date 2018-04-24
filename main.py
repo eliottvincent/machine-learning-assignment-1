@@ -11,15 +11,20 @@ continuousFeatures = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital
 categoricalFeatures = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country', 'target']
 continuousStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
 categoricalStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
+dataPath = './data/'
+teamName = 'A'
 
 
 def main():
-	df = load_dataframe('./data/DataSet.csv')
-	write_dataframe('./data/Test.csv', df)
+	df = load_dataframe('DataSet.csv')
+
 	continuousReport = generateContinuousReport(df)
 	print(continuousReport)
 	categoricalReport = generateCategoricalReport(df)
 	print(categoricalReport)
+	
+	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
+	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
 
 
@@ -32,10 +37,12 @@ def main():
 #  ╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝       ╚═════╝  ╚═════╝    ╚═╝   ╚═╝      ╚═════╝    ╚═╝   
 
 
-def load_dataframe(path):
+def load_dataframe(fileName):
+	path = dataPath + fileName
 	return pd.read_csv(path, header=0, index_col='id', na_values=['?'])
 
-def write_dataframe(path,df):
+def write_dataframe(df, fileName):
+	path = dataPath + fileName
 	df.to_csv(path)
 
 
