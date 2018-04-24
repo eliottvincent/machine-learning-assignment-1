@@ -15,8 +15,8 @@ import numpy as np
 #================================================================================
 continuousFeatures = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital-loss', 'hours-per-week']
 categoricalFeatures = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country', 'target']
-continuousStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
-categoricalStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
+continuousStatistics = ['FEATURENAME', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
+categoricalStatistics = ['FEATURENAME', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
 dataPath = './data/'
 teamName = 'A'
 
@@ -190,7 +190,7 @@ def generateReport(dataFrame, featuresNames, statisticsNames, computeFunction):
 
 	# 1st step: create an empty dataframe with the statistics names as columns
 	statisticsDf = pd.DataFrame(columns=statisticsNames)
-	statisticsDf.set_index('feature_name', inplace=True)
+	statisticsDf.set_index('FEATURENAME', inplace=True)
 
 	# 2nd step: loop over each feature
 	for featureName in featuresNames:
