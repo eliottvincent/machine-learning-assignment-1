@@ -1,8 +1,14 @@
+__author__ = "Eliott Vincent, Arthur Chevallier, Anais Pignet, Simon Bonneaud"
+
+__license__ = "MIT"
+__version__ = "0.1"
+
 #================================================================================
 # modules
 #================================================================================
 import pandas as pd
 import numpy as np
+
 
 #================================================================================
 # properties
@@ -11,15 +17,20 @@ continuousFeatures = ['age', 'fnlwgt', 'education-num', 'capital-gain', 'capital
 categoricalFeatures = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country', 'target']
 continuousStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'minimum', 'first_quartile', 'mean', 'median', 'third_quartile', 'maximum', 'std_dev']
 categoricalStatistics = ['feature_name', 'count', 'miss_percentage', 'card', 'mode', 'mode_frequency', 'mode_percentage', 'second_mode', 'second_mode_frequency', 'second_mode_percentage']
+dataPath = './data/'
+teamName = 'A'
 
 
 def main():
-	df = load_dataframe('./data/DataSet.csv')
-	write_dataframe('./data/Test.csv', df)
+	df = load_dataframe('DataSet.csv')
+
 	continuousReport = generateContinuousReport(df)
 	print(continuousReport)
 	categoricalReport = generateCategoricalReport(df)
 	print(categoricalReport)
+	
+	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
+	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
 
 
@@ -32,10 +43,12 @@ def main():
 #  ╚═╝╚═╝  ╚═══╝╚═╝      ╚═════╝    ╚═╝       ╚═════╝  ╚═════╝    ╚═╝   ╚═╝      ╚═════╝    ╚═╝   
 
 
-def load_dataframe(path):
+def load_dataframe(fileName):
+	path = dataPath + fileName
 	return pd.read_csv(path, header=0, index_col='id', na_values=['?'])
 
-def write_dataframe(path,df):
+def write_dataframe(df, fileName):
+	path = dataPath + fileName
 	df.to_csv(path)
 
 
@@ -60,11 +73,26 @@ def computeContinuousStatistics(df):
 	{} -- a dictionary containing the statistics
     """
 
-	# returning statistics
+	# init. values
+	count=0
+	miss=0
+	valuesTab=[]
+	card=0
+
+	# computing statistics
+	for values in df:
+		count+=1
+		if values==' ?' or values=='?':
+			miss+=1
+		if values not in valuesTab:
+			valuesTab.append(values)
+			card+=1
+
+	# returning final statistics
 	return {
-		'count': len(df),
-		'miss_percentage': len(df)-df.count(),
-		'card': df.nunique(),
+		'count': count,
+		'miss_percentage': (miss/count)*100,
+		'card': card,
 		'minimum': df.min(),
 		'first_quartile': df.quantile([0.25][0]),
 		'mean': df.mean(),
@@ -103,8 +131,8 @@ def computeCategoricalStatistics(df):
 
 	# returning final statistics
 	return {
-		'count': count,
-		'miss_percentage': (miss/count)*100,
+		'count': card,
+		'miss_percentage': card,
 		'card': card,
 		'mode': card,
 		'mode_frequency': card,
