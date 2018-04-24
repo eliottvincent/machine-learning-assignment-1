@@ -26,18 +26,22 @@ teamName = 'A'
 
 
 def main():
+	# loading the dataset as a Pandas DataFrame
 	df = load_dataframe('DataSet.csv')
-	#print(len(df['workclass'])-df['workclass'].count())
 
+	# splitting the main DataFrame in two sub-dataframes (continuous and categorical features)
 	continuousDf = getContinuousDf(df)
-	categoricalDf = getCategorical(df)
+	categoricalDf = getCategoricalDf(df)
 
+	# generating the reports for bot continuous and categorical features
 	continuousReport = generateContinuousReport(continuousDf)
 	categoricalReport = generateCategoricalReport(categoricalDf)
 	
+	# saving the reports as .csv files
 	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
 	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
+	# generating the graphs for continuous and categorical features
 	generateContinuousGraphs(continuousDf, continuousReport)
 	generateCategoricalGraphs(categoricalDf)
 
@@ -53,17 +57,54 @@ def main():
 
 
 def load_dataframe(fileName):
+	"""load_dataframe
+	Loads a DataFrame from a .csv file.
+
+    Input:
+    fileName -- the name of the file (should be located in ./data/)
+    
+	Output:
+	pd.read_csv() -- the DataFrame loaded by Pandas
+    """
 	path = dataPath + fileName
 	return pd.read_csv(path, header=0, index_col='id', na_values=[' ?'])
 
+
 def write_dataframe(df, fileName):
+	"""write_dataframe
+	Writes a DataFrame into a .csv file.
+
+    Input:
+    df -- the DataFrame to write
+    fileName -- the name of the file (will be saved in ./data/)
+    """
 	path = dataPath + fileName
 	df.to_csv(path)
 
+
 def getContinuousDf(df):
+	"""getContinuousDf
+	Extract continuous features from the main DataFrame.
+
+    Input:
+    df -- the main DataFrame
+    
+	Output:
+	df.drop() -- the main DataFrame with categoricalFeatures omitted
+    """
 	return df.drop(categoricalFeatures, axis=1)
 
-def getCategorical(df):
+
+def getCategoricalDf(df):
+	"""getCategoricalDf
+	Extract categorical features from the main DataFrame.
+
+    Input:
+    df -- the main DataFrame
+    
+	Output:
+	df.drop() -- the main DataFrame with continuousFeatures omitted
+    """
 	return df.drop(continuousFeatures, axis=1)
 
 
@@ -88,7 +129,7 @@ def computeContinuousStatistics(df):
 	{} -- a dictionary containing the statistics
     """
 
-	# returning statistics
+	# returning the final statistics
 	return {
 		'count': len(df),
 		'miss_percentage': ((len(df)-df.count())*100)/len(df),
@@ -108,39 +149,25 @@ def computeCategoricalStatistics(df):
 	Computes statistics for categorical features.
 
     Input:
-    df -- DataFrame to use
+    df -- DataFrame containing to use
     
 	Output:
 	{} -- a dictionary containing the statistics
     """
-
-	# init. values
-	count=0
-	miss=0
-	valuesTab=[]
-	card=0
-
-	# computing statistics
-	for values in df:
-		count+=1
-		if values==' ?' or values=='?':
-			miss+=1
-		if values not in valuesTab:
-			valuesTab.append(values)
-			card+=1
 	
-	# find modes
-	newDf = df.copy()
-	firstMode = newDf.mode()[0]
-	firstModeFrequency = newDf.describe()[3]
-	firstModePercentage = (firstModeFrequency/count)*100
+	# computing first mode
+	tmpDf = df.copy()
+	firstMode = tmpDf.mode()[0]
+	firstModeFrequency = tmpDf.describe()['freq']
+	firstModePercentage = (firstModeFrequency/len(df))*100
 	
-	newDf = newDf[newDf != firstMode]
-	secondMode = newDf.mode()[0]
-	secondModeFrequency = newDf.describe()[3]
-	secondModePercentage = (secondModeFrequency/count)*100
+	# computing second mode
+	tmpDf = tmpDf[tmpDf != firstMode]	# removing rows with first mode values
+	secondMode = tmpDf.mode()[0]
+	secondModeFrequency = tmpDf.describe()['freq']
+	secondModePercentage = (secondModeFrequency/len(df))*100
 
-	# returning final statistics
+	# returning the final statistics
 	return {
 		'count': len(df),
 		'miss_percentage': ((len(df)-df.count())*100)/len(df),
@@ -152,6 +179,8 @@ def computeCategoricalStatistics(df):
 		'second_mode_frequency': secondModeFrequency,
 		'second_mode_percentage': secondModePercentage
 	}
+
+
 
 
 #  ██████╗ ███████╗██████╗  ██████╗ ██████╗ ████████╗███████╗
@@ -172,7 +201,9 @@ def generateContinuousReport(continuousDf):
 	Output:
 	generateReport() -- output of the generateReport() method
     """
-	return generateReport(continuousDf, continuousStatistics, computeContinuousStatistics)
+	report = generateReport(continuousDf, continuousStatistics, computeContinuousStatistics)
+	print('Report for continuous features: OK')
+	return report
 
 
 def generateCategoricalReport(categoricalDf):
@@ -185,7 +216,9 @@ def generateCategoricalReport(categoricalDf):
 	Output:
 	generateReport() -- output of the generateReport() method
     """
-	return generateReport(categoricalDf, categoricalStatistics, computeCategoricalStatistics)
+	report = generateReport(categoricalDf, categoricalStatistics, computeCategoricalStatistics)
+	print('Report for categorical features: OK')
+	return report
 
 
 def generateReport(dataFrame, statisticsNames, computeFunction):
@@ -235,12 +268,31 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 
 
 def drawHistogramFromFeature(featureName, featureValues):
+	"""drawHistogramFromFeature
+	Draws an histogram graph from a feature.
+	The graph is then saved in ./data/
+
+    Input:
+    featureName -- the name of the feature
+    featureValues -- the values of the feature
+    """
+
 	data = [go.Histogram(x=featureValues)]
 	path = dataPath + featureName + '-histogram.html'
 	plotly.offline.plot(data, filename=path, auto_open=False)
 
+
 def drawBarPlotFromFeature(featureName, featureValues):
-	
+	"""drawBarPlotFromFeature
+	Draws a bar plot graph from a feature.
+	The graph is then saved in ./data/
+
+    Input:
+    featureName -- the name of the feature
+    featureValues -- the values of the feature
+    """
+
+    # we need to count the number of each occurrence
 	occurrences = Counter(featureValues)
 	x_axis = []
 	y_axis = []
@@ -249,30 +301,48 @@ def drawBarPlotFromFeature(featureName, featureValues):
 		y_axis.append(occurrences[occurrence])
 
 	data = [go.Bar(x=x_axis, y=y_axis)]
-
 	path = dataPath + featureName + '-bar-plot.html'
 	plotly.offline.plot(data, filename=path, auto_open=False)
 
+
 def generateContinuousGraphs(continuousDf, continuousReport):
+	"""generateContinuousGraphs
+	Draws graphs for each continuous feature of a DataFrame.
+	According to the cardinality of the feature, the generated graph will either be an histogram or a bar plot.
+
+    Input:
+    continuousDf -- the DataFrame containing all the continuous features
+    continuousReport -- the report associated with the continuous features
+    """
 
 	for featureName in continuousDf:
 
-		currentFeatureReport = continuousReport.loc[featureName]
-		currentCard = currentFeatureReport['card']
+		cardinality = continuousReport.loc[featureName]['card']	# getting the cardinality from the report
 
 		# if the continuous feature has a low cardinality (< 10), we draw a bar plot
-		if currentCard < 10:
+		if cardinality < 10:
 			drawBarPlotFromFeature(featureName, continuousDf[featureName])
 		# else we draw an histogram
 		else:
 			drawHistogramFromFeature(featureName, continuousDf[featureName])
 
+	print('Graphs for continuous features: OK')
+
+
 def generateCategoricalGraphs(categoricalDf):
-	
+	"""generateCategoricalGraphs
+	Draws graphs for each categorical feature of a DataFrame.
+
+    Input:
+    categoricalDf -- the DataFrame containing all the categorical features
+    """
+
 	for featureName in categoricalDf:
 		drawBarPlotFromFeature(featureName, categoricalDf[featureName])
 
+	print('Graphs for categorical features: OK')
 
-# Lancement du programme
+
+# program launch
 if __name__ == '__main__':
 	main()
