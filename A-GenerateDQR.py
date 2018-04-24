@@ -1,4 +1,4 @@
-__author__ = "Eliott Vincent, Arthur Chevallier, Anaïs Pignet, Simon Bonnaud"
+__author__ = "Simon Bonnaud, Arthur Chevallier, Anaïs Pignet, Eliott Vincent"
 
 __license__ = "MIT"
 __version__ = "0.1"
