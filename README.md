@@ -18,7 +18,8 @@ Folder -> Data set : DataSet.csv
 Python : 3.6.4
 libs : pandas, numpy and plotly
 
-###################  ###################
+##################### EXECUTION #####################
+command : python A-GenerateDQR.py
 
 ###################### OUTPUTS ######################
 Data Quality Reports : CSV format
