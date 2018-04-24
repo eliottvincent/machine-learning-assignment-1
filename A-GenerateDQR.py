@@ -24,10 +24,11 @@ teamName = 'A'
 def main():
 	df = load_dataframe('DataSet.csv')
 
-	continuousReport = generateContinuousReport(df)
-	print(continuousReport)
-	categoricalReport = generateCategoricalReport(df)
-	print(categoricalReport)
+	continuousDf = getContinuousDf(df)
+	categoricalDf = getCategorical(df)
+
+	continuousReport = generateContinuousReport(continuousDf)
+	categoricalReport = generateCategoricalReport(categoricalDf)
 	
 	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
 	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
@@ -50,6 +51,12 @@ def load_dataframe(fileName):
 def write_dataframe(df, fileName):
 	path = dataPath + fileName
 	df.to_csv(path)
+
+def getContinuousDf(df):
+	return df.drop(categoricalFeatures, axis=1)
+
+def getCategorical(df):
+	return df.drop(continuousFeatures, axis=1)
 
 
 
@@ -153,39 +160,38 @@ def computeCategoricalStatistics(df):
 #  ╚═╝  ╚═╝╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝
 
 
-def generateContinuousReport(df):
+def generateContinuousReport(continuousDf):
 	"""generateContinuousReport
 	Generates a report of continuous features statistics from a dataframe.
 
     Input:
-    df -- DataFrame to use
+    continuousDf -- DataFrame to use
     
 	Output:
 	generateReport() -- output of the generateReport() method
     """
-	return generateReport(df, continuousFeatures, continuousStatistics, computeContinuousStatistics)
+	return generateReport(continuousDf, continuousStatistics, computeContinuousStatistics)
 
 
-def generateCategoricalReport(df):
+def generateCategoricalReport(categoricalDf):
 	"""generateCategoricalReport
 	Generates a report of categorical features statistics from a dataframe.
 
     Input:
-    df -- DataFrame to use
+    categoricalDf -- DataFrame to use
     
 	Output:
 	generateReport() -- output of the generateReport() method
     """
-	return generateReport(df, categoricalFeatures, categoricalStatistics, computeCategoricalStatistics)
+	return generateReport(categoricalDf, categoricalStatistics, computeCategoricalStatistics)
 
 
-def generateReport(dataFrame, featuresNames, statisticsNames, computeFunction):
+def generateReport(dataFrame, statisticsNames, computeFunction):
 	"""generateReport
 	Generates a report from a dataframe.
 
     Input:
     dataFrame -- DataFrame to use
-    featuresNames -- features to analyse
     statisticsNames -- statistics to compute
     computeFunction -- method to use to compute the mesures
 
@@ -198,7 +204,7 @@ def generateReport(dataFrame, featuresNames, statisticsNames, computeFunction):
 	statisticsDf.set_index('feature_name', inplace=True)
 
 	# 2nd step: loop over each feature
-	for featureName in featuresNames:
+	for featureName in dataFrame:
 		
 		# gathering all values for the current feature
 		featureValues = dataFrame[featureName]
