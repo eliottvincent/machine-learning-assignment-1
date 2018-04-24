@@ -36,8 +36,8 @@ def main():
 	write_dataframe(continuousReport, teamName + '-DQR-ContinuousFeatures.csv')
 	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
-	generateContinuousGraphs(continuousDf)
-	# generateCategoricalGraphs(categoricalDf)
+	generateContinuousGraphs(continuousDf, continuousReport)
+	# generateCategoricalGraphs(categoricalDf, categoricalReport)
 
 
 
