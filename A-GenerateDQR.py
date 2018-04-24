@@ -1,8 +1,14 @@
+__author__ = "Eliott Vincent, Arthur Chevallier, Anais Pignet, Simon Bonneaud"
+
+__license__ = "MIT"
+__version__ = "0.1"
+
 #================================================================================
 # modules
 #================================================================================
 import pandas as pd
 import numpy as np
+
 
 #================================================================================
 # properties
@@ -125,8 +131,8 @@ def computeCategoricalStatistics(df):
 
 	# returning final statistics
 	return {
-		'count': count,
-		'miss_percentage': (miss/count)*100,
+		'count': card,
+		'miss_percentage': card,
 		'card': card,
 		'mode': card,
 		'mode_frequency': card,
