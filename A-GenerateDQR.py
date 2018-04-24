@@ -76,7 +76,7 @@ def computeContinuousStatistics(df):
 	# returning statistics
 	return {
 		'count': len(df),
-		'miss_percentage': len(df)-df.count(),
+		'miss_percentage': ((len(df)-df.count())*100)/len(df),
 		'card': df.nunique(),
 		'minimum': df.min(),
 		'first_quartile': df.quantile([0.25][0]),
