@@ -1,4 +1,4 @@
-__author__ = "Eliott Vincent, Arthur Chevallier, Anais Pignet, Simon Bonneaud"
+__author__ = "Eliott Vincent, Arthur Chevallier, Anaïs Pignet, Simon Bonnaud"
 
 __license__ = "MIT"
 __version__ = "0.1"
@@ -11,6 +11,7 @@ import numpy as np
 import plotly
 from plotly.graph_objs import Scatter, Layout
 import plotly.graph_objs as go
+from collections import Counter
 
 
 #================================================================================
@@ -37,7 +38,8 @@ def main():
 	write_dataframe(categoricalReport, teamName + '-DQR-CategoricalFeatures.csv')
 
 	generateContinuousGraphs(continuousDf, continuousReport)
-	# generateCategoricalGraphs(categoricalDf, categoricalReport)
+	generateCategoricalGraphs(categoricalDf)
+
 
 
 
@@ -237,22 +239,43 @@ def generateReport(dataFrame, statisticsNames, computeFunction):
 #   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝
 
 
-def generateContinuousGraphs(continuousReportDf):
+def drawHistogramFromFeature(featureName, featureValues):
+	data = [go.Histogram(x=featureValues)]
+	path = dataPath + featureName + '-histogram.html'
+	plotly.offline.plot(data, filename=path, auto_open=False)
 
-	for feature in continuousReportDf:
-		# print('Viewing ' + index + ' row: ' + str(row['card']))
-
-		data = [go.Histogram(x=continuousReportDf[feature])]
-		path = dataPath + feature + '-histogram.html'
-		plotly.offline.plot(data, filename=path, auto_open=False)
+def drawBarPlotFromFeature(featureName, featureValues):
 	
+	occurrences = Counter(featureValues)
+	x_axis = []
+	y_axis = []
+	for occurrence in occurrences:
+		x_axis.append(occurrence)
+		y_axis.append(occurrences[occurrence])
 
+	data = [go.Bar(x=x_axis, y=y_axis)]
 
+	path = dataPath + featureName + '-bar-plot.html'
+	plotly.offline.plot(data, filename=path, auto_open=False)
 
-	# a histogram for each of the continuous feature with high cardinality (≥ 10)
-	# a bar plot for each continuous feature with a low cardinality (< 10)
+def generateContinuousGraphs(continuousDf, continuousReport):
 
-def generateCategoricalGraphs(categoricalReport):
-	print('test')
+	for featureName in continuousDf:
+
+		currentFeatureReport = continuousReport.loc[featureName]
+		currentCard = currentFeatureReport['card']
+
+		# if the continuous feature has a low cardinality (< 10), we draw a bar plot
+		if currentCard < 10:
+			drawBarPlotFromFeature(featureName, continuousDf[featureName])
+		# else we draw an histogram
+		else:
+			drawHistogramFromFeature(featureName, continuousDf[featureName])
+
+def generateCategoricalGraphs(categoricalDf):
+	
+	for featureName in categoricalDf:
+		drawBarPlotFromFeature(featureName, categoricalDf[featureName])
+
 
 main()
