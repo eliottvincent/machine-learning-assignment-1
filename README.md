@@ -1,7 +1,7 @@
 #############################################################################
 # Project : machine-learning-assignment-1                                   #
 # Autor : Simon Bonnaud - Arthur Chevallier - Anaïs Pignet - Eliott Vincent #
-# Subject : data-mining														#
+# Subject : machine-learning														#
 #############################################################################
 
 #################### DESCRIPTION ####################
